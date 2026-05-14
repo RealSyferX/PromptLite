@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PromptLite Settings</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <h1>Settings</h1>
+          <p>PromptLite local generation defaults.</p>
+        </div>
+        <div class="header-actions">
+          <a class="settings-link" href="/">Generator</a>
+          <div class="health-pill" id="healthPill">Checking backend</div>
+        </div>
+      </header>
+
+      <section class="settings-panel">
+        <form class="settings-form" id="settingsForm">
+          <label class="field" for="defaultBackend">
+            <span>Default backend</span>
+            <select id="defaultBackend">
+              <option value="auto">Auto</option>
+              <option value="cpu">CPU</option>
+              <option value="cuda">CUDA</option>
+              <option value="openvino">OpenVINO</option>
+            </select>
+          </label>
+
+          <label class="field" for="defaultProfile">
+            <span>Default profile</span>
+            <select id="defaultProfile">
+              <option value="low_ram">Low RAM</option>
+              <option value="balanced">Balanced</option>
+              <option value="quality">Quality</option>
+            </select>
+          </label>
+
+          <label class="field" for="defaultWidth">
+            <span>Default width</span>
+            <select id="defaultWidth">
+              <option value="384">384</option>
+              <option value="512">512</option>
+              <option value="640">640</option>
+              <option value="768">768</option>
+            </select>
+          </label>
+
+          <label class="field" for="defaultHeight">
+            <span>Default height</span>
+            <select id="defaultHeight">
+              <option value="384">384</option>
+              <option value="512">512</option>
+              <option value="640">640</option>
+              <option value="768">768</option>
+            </select>
+          </label>
+
+          <label class="field" for="defaultSteps">
+            <span>Default steps</span>
+            <input id="defaultSteps" type="number" min="1" max="80" step="1">
+          </label>
+
+          <label class="field" for="defaultGuidance">
+            <span>Default guidance scale</span>
+            <input id="defaultGuidance" type="number" min="1" max="20" step="0.1">
+          </label>
+
+          <label class="field full-span" for="defaultModel">
+            <span>Default model</span>
+            <select id="defaultModel"></select>
+          </label>
+
+          <label class="field full-span" for="hfModelIds">
+            <span>Hugging Face model IDs</span>
+            <textarea id="hfModelIds" rows="4" placeholder="author/model-name"></textarea>
+          </label>
+
+          <label class="checkbox-field full-span" for="unloadAfterGeneration">
+            <input id="unloadAfterGeneration" type="checkbox">
+            <span>Unload model after generation</span>
+          </label>
+
+          <div class="button-row full-span">
+            <button class="primary-button" id="saveSettingsButton" type="submit">Save Settings</button>
+          </div>
+
+          <section class="status-box full-span" aria-live="polite">
+            <h2>Status</h2>
+            <p id="statusText">Ready.</p>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="/settings.js"></script>
+  </body>
+</html>
+

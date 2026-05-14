@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PromptLite</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <h1>PromptLite</h1>
+          <p>Local AI image generation for low VRAM and CPU-friendly Windows PCs.</p>
+        </div>
+        <div class="header-actions">
+          <a class="settings-link" href="/settings.html">Settings</a>
+          <div class="health-pill" id="healthPill">Checking backend</div>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <form class="control-panel" id="generateForm">
+          <label class="field full-span" for="prompt">
+            <span>Prompt</span>
+            <textarea id="prompt" rows="5" placeholder="a cinematic robot cat in a cozy workshop" required></textarea>
+          </label>
+
+          <label class="field full-span" for="negativePrompt">
+            <span>Negative prompt</span>
+            <textarea id="negativePrompt" rows="3" placeholder="blurry, low quality"></textarea>
+          </label>
+
+          <label class="field" for="model">
+            <span>Model</span>
+            <select id="model"></select>
+          </label>
+
+          <div class="model-tools">
+            <label class="field" for="recommendedDownloadModel">
+              <span>Recommended download</span>
+              <select id="recommendedDownloadModel">
+                <option value="">Choose a model to download</option>
+              </select>
+            </label>
+            <p class="model-tier-note" id="recommendedModelInfo">Pick a tier first if you are not sure what your PC can handle.</p>
+            <label class="field" for="hfModelId">
+              <span>Hugging Face model ID</span>
+              <input id="hfModelId" type="text" placeholder="author/model-name">
+            </label>
+            <label class="field" for="downloadFolderName">
+              <span>Save folder</span>
+              <input id="downloadFolderName" type="text" placeholder="author--model-name">
+            </label>
+            <div class="small-button-row">
+              <button class="secondary-button" id="saveModelButton" type="button">Save Model ID</button>
+              <button class="secondary-button" id="downloadModelButton" type="button">Download Model</button>
+              <button class="secondary-button" id="refreshModelsButton" type="button">Refresh Models</button>
+            </div>
+          </div>
+
+          <label class="field" for="backend">
+            <span>Backend</span>
+            <select id="backend">
+              <option value="auto">Auto</option>
+              <option value="cpu">CPU</option>
+              <option value="cuda">CUDA</option>
+              <option value="openvino">OpenVINO</option>
+            </select>
+          </label>
+
+          <label class="field" for="profile">
+            <span>Profile</span>
+            <select id="profile">
+              <option value="low_ram">Low RAM</option>
+              <option value="balanced">Balanced</option>
+              <option value="quality">Quality</option>
+            </select>
+          </label>
+
+          <div class="size-row">
+            <label class="field" for="width">
+              <span>Width</span>
+              <select id="width">
+                <option value="384">384</option>
+                <option value="512">512</option>
+                <option value="640">640</option>
+                <option value="768">768</option>
+              </select>
+            </label>
+
+            <label class="field" for="height">
+              <span>Height</span>
+              <select id="height">
+                <option value="384">384</option>
+                <option value="512">512</option>
+                <option value="640">640</option>
+                <option value="768">768</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field" for="steps">
+            <span>Steps</span>
+            <input id="steps" type="number" min="1" max="80" step="1" value="20">
+          </label>
+
+          <label class="field" for="guidanceScale">
+            <span>Guidance scale</span>
+            <input id="guidanceScale" type="number" min="1" max="20" step="0.1" value="7.5">
+          </label>
+
+          <label class="field" for="seed">
+            <span>Seed</span>
+            <input id="seed" type="number" step="1" value="-1">
+          </label>
+
+          <div class="button-row full-span">
+            <button class="primary-button" id="generateButton" type="submit">Generate Image</button>
+            <button class="secondary-button" id="unloadButton" type="button">Unload Model</button>
+          </div>
+
+          <section class="status-box full-span" aria-live="polite">
+            <h2>Status</h2>
+            <p id="statusText">Ready.</p>
+          </section>
+        </form>
+
+        <section class="output-panel">
+          <div class="output-header">
+            <h2>Output</h2>
+            <span id="outputMeta"></span>
+          </div>
+          <div class="image-stage" id="imageStage">
+            <p>No image generated yet.</p>
+          </div>
+
+          <section class="gallery-section">
+            <h2>Recent Images</h2>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

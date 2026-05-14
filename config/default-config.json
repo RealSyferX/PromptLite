@@ -1,0 +1,60 @@
+{
+  "node_port": 1234,
+  "python_backend_url": "http://127.0.0.1:7861",
+  "python_port": 7861,
+  "outputs_dir": "outputs",
+  "models_dir": "models",
+  "default_backend": "auto",
+  "default_model": "default",
+  "default_width": 512,
+  "default_height": 512,
+  "default_steps": 20,
+  "default_guidance_scale": 7.5,
+  "default_performance_profile": "balanced",
+  "unload_model_after_generation": false,
+  "huggingface_model_ids": [],
+  "recommended_model_downloads": [
+    {
+      "id": "nota-ai/bk-sdm-tiny",
+      "name": "BK-SDM Tiny",
+      "folder": "bk-sdm-tiny",
+      "tier": "Lowest",
+      "description": "Smallest starter option for very weak PCs and CPU testing. Quality is lower."
+    },
+    {
+      "id": "nota-ai/bk-sdm-small",
+      "name": "BK-SDM Small",
+      "folder": "bk-sdm-small",
+      "tier": "Low",
+      "description": "Recommended lightweight starter model. Smaller than Stable Diffusion 1.5 with usable quality."
+    },
+    {
+      "id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "name": "Stable Diffusion 1.5",
+      "folder": "stable-diffusion-v1-5",
+      "tier": "Mid-End",
+      "description": "Classic general-purpose model. Better quality than tiny models, but heavier."
+    },
+    {
+      "id": "SimianLuo/LCM_Dreamshaper_v7",
+      "name": "LCM DreamShaper v7",
+      "folder": "lcm-dreamshaper-v7",
+      "tier": "Mid-End",
+      "description": "Fast low-step model. Try 4 to 8 steps after downloading."
+    },
+    {
+      "id": "segmind/SSD-1B",
+      "name": "SSD-1B",
+      "folder": "ssd-1b",
+      "tier": "HighEnd",
+      "description": "Better quality compact SDXL-style model. Bigger than BK-SDM, but still lighter than full SDXL."
+    },
+    {
+      "id": "stabilityai/stable-diffusion-xl-base-1.0",
+      "name": "Stable Diffusion XL Base 1.0",
+      "folder": "sdxl-base-1.0",
+      "tier": "Powerful",
+      "description": "Large high-quality SDXL base model. Best for strong GPUs and lots of RAM."
+    }
+  ]
+}

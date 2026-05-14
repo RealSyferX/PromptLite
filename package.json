@@ -1,0 +1,19 @@
+{
+  "name": "promptlite",
+  "version": "0.1.0",
+  "description": "A lightweight local AI image generator for Windows with a simple Node.js UI and Python backend.",
+  "main": "server.js",
+  "author": "RealSyferX",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3"
+  }
+}

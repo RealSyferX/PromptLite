@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pillow
+psutil
+diffusers
+transformers
+accelerate
+safetensors
+torch
+huggingface_hub

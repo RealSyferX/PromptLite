@@ -1,0 +1,16 @@
+node_modules/
+backend/.venv/
+__pycache__/
+*.pyc
+outputs/*.png
+outputs/*.jpg
+outputs/*.jpeg
+outputs/*.webp
+!outputs/.gitkeep
+models/*
+!models/.gitkeep
+config/user-settings.json
+.env
+.DS_Store
+Thumbs.db
+
