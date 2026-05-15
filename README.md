@@ -1,10 +1,10 @@
 # PromptLite
 
-A lightweight local AI image generator for Windows using a simple Node.js web UI and Python backend.
+A lightweight local or VPS-hosted AI image generator using a simple Node.js web UI and Python backend.
 
 Original author: RealSyferX
 
-PromptLite is built for normal Windows PCs first: low VRAM systems, CPU-only systems, and beginner-friendly local image generation. It does not include model files, does not require a cloud API, and does not send prompts or images to external services.
+PromptLite is built for normal PCs and small servers first: low VRAM systems, CPU-only systems, and beginner-friendly image generation. It does not include model files, does not require a cloud API, and does not send prompts or images to external services unless you configure Hugging Face model downloads yourself.
 
 ## Features
 
@@ -16,6 +16,7 @@ PromptLite is built for normal Windows PCs first: low VRAM systems, CPU-only sys
 - Optional OpenVINO mode for supported Intel CPU/iGPU systems
 - Recent image gallery
 - Model folder support
+- VPS/LAN friendly start scripts
 - No cloud API required
 - No account required
 
@@ -23,13 +24,13 @@ PromptLite is built for normal Windows PCs first: low VRAM systems, CPU-only sys
 
 Many AI image tools are powerful, but they can also feel heavy, crowded, and intimidating. PromptLite focuses on one straightforward workflow: type a prompt, choose a few practical settings, click Generate, and view the image.
 
-The project is local-first and resource-conscious. It prefers simple defaults, clear errors, and CPU-compatible behavior over assuming every user has a large NVIDIA GPU.
+The project is local-first and resource-conscious. It prefers simple defaults, clear errors, and CPU-compatible behavior over assuming every user has a large NVIDIA GPU. It can also run on a VPS so you can open the UI from your laptop, phone, or home WiFi.
 
 ## Requirements
 
 Minimum:
 
-- Windows 10 or Windows 11
+- Windows 10/11 PC, Windows VPS, or Linux VPS
 - Python 3.10 or newer
 - Node.js 18 or newer
 - 16GB RAM recommended for CPU mode
@@ -42,7 +43,7 @@ Recommended:
 - NVIDIA GPU optional for faster CUDA generation
 - Intel CPU/iGPU users can try OpenVINO
 
-## Installation
+## Installation on Windows
 
 ```bat
 git clone https://github.com/USERNAME/PromptLite.git
@@ -52,7 +53,22 @@ scripts\setup.bat
 
 The setup script creates a Python virtual environment, installs Python dependencies, and installs Node.js dependencies.
 
-## Running
+## Installation on Linux/VPS
+
+```sh
+git clone https://github.com/USERNAME/PromptLite.git
+cd PromptLite
+bash scripts/setup-unix.sh
+```
+
+For Ubuntu/Debian VPS machines, install system dependencies first if needed:
+
+```sh
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip nodejs npm git
+```
+
+## Running on Windows
 
 ```bat
 scripts\start-windows.bat
@@ -65,6 +81,106 @@ http://localhost:1234
 ```
 
 The Node.js UI runs on port `1234` by default. The Python backend runs on port `7861` by default.
+
+## Running on a Windows VPS
+
+```bat
+scripts\start-windows-vps.bat YOUR_SERVER_IP
+```
+
+Example:
+
+```bat
+scripts\start-windows-vps.bat 52.172.248.1
+```
+
+Then open:
+
+```text
+http://YOUR_SERVER_IP:1234
+```
+
+If it does not open from your laptop, run this once as Administrator on the VPS:
+
+```bat
+scripts\open-windows-firewall.bat
+```
+
+If you previously started the local-only script, restart cleanly:
+
+```bat
+scripts\restart-windows-vps.bat YOUR_SERVER_IP
+```
+
+To diagnose the exact blocker:
+
+```bat
+scripts\diagnose-windows-vps.bat
+```
+
+Also open inbound TCP port `1234` in your VPS provider firewall/security group. For Azure, add an inbound NSG rule for TCP `1234`.
+
+## Running on a Linux VPS
+
+```sh
+bash scripts/start-vps.sh
+```
+
+The Linux VPS start script exposes the Node.js web UI on `0.0.0.0:1234` and keeps the Python backend private on `127.0.0.1:7861`. Open:
+
+```text
+http://YOUR_SERVER_IP:1234
+```
+
+If your VPS firewall is enabled, allow the UI port:
+
+```sh
+sudo ufw allow 1234/tcp
+```
+
+You can also copy `.env.example` to `.env` and edit it:
+
+```sh
+cp .env.example .env
+```
+
+Important: PromptLite does not include login/authentication. If you expose it to the public internet, put it behind a firewall, VPN, SSH tunnel, or reverse proxy with authentication.
+
+## LAN Access From Another Device
+
+On Windows, the default start script is local-only. To let another laptop or phone on the same WiFi open PromptLite, start it with:
+
+```bat
+set PROMPTLITE_NODE_HOST=0.0.0.0
+scripts\start-windows.bat
+```
+
+Then open this from the other device:
+
+```text
+http://YOUR_PC_LAN_IP:1234
+```
+
+## Server Configuration
+
+These environment variables are useful for VPS, LAN, Docker, or reverse proxy setups:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PROMPTLITE_NODE_HOST` | `127.0.0.1` locally, `0.0.0.0` in VPS scripts | Address for the web UI to listen on |
+| `PROMPTLITE_NODE_PORT` | `1234` | Web UI port |
+| `PROMPTLITE_PYTHON_HOST` | `127.0.0.1` | Address for the Python backend to listen on |
+| `PROMPTLITE_PYTHON_PORT` | `7861` | Python backend port |
+| `PROMPTLITE_PYTHON_BACKEND_URL` | `http://127.0.0.1:7861` | URL the Node server uses to reach Python |
+| `PROMPTLITE_PUBLIC_URL` | empty | Public IP/domain shown in logs and backend docs |
+| `PROMPTLITE_CORS_ORIGINS` | local UI origins | Comma-separated allowed browser origins for direct backend access |
+| `HF_TOKEN` | empty | Hugging Face token for gated models, higher rate limits, and faster downloads |
+| `PROMPTLITE_OUTPUTS_DIR` | `outputs` | Generated image directory |
+| `PROMPTLITE_MODELS_DIR` | `models` | Model directory |
+| `PROMPTLITE_DISABLE_SAFETY_CHECKER` | `false` | Disable Diffusers safety checker if it replaces outputs with black images |
+| `PROMPTLITE_PRUNE_REDUNDANT_MODEL_FILES` | `true` | Remove duplicate `.bin`/`.fp16` weight files after downloads |
+| `PROMPTLITE_CPU_ONLY_MODELS` | `true` | Hide/block GPU-VRAM-heavy model recommendations and downloads |
+| `PROMPTLITE_DEFAULT_PERFORMANCE_PROFILE` | `full_power` | Default profile; `full_power` uses all detected CPU threads and enables CUDA TF32 where available |
 
 ## Model Setup
 
@@ -96,7 +212,7 @@ You can also configure Hugging Face model IDs in `config/default-config.json` or
 
 You can also use the browser UI:
 
-- Open `http://localhost:1234`
+- Open the PromptLite UI
 - Paste a Hugging Face model ID into `Hugging Face model ID`
 - Click `Save Model ID`
 - Select the model from the `Model` dropdown
@@ -109,22 +225,28 @@ PromptLite does not automatically download massive models. Downloads only start 
 
 PromptLite includes a simple browser-based downloader for Hugging Face models.
 
-1. Start PromptLite with `scripts\start-windows.bat`
-2. Open `http://localhost:1234`
+1. Start PromptLite with the Windows or VPS start script
+2. Open the PromptLite UI
 3. Choose a tiered model from `Recommended download`, or enter a Hugging Face model ID manually
 4. Confirm or edit the `Save folder` name
 5. Click `Download Model`
 
-Recommended model tiers:
+Recommended CPU/RAM model tiers:
 
-| Tier | Model | Best for |
+| Tier | Catalog size | Best for |
 | --- | --- | --- |
-| Lowest | `nota-ai/bk-sdm-tiny` | Very weak PCs, CPU testing, lowest quality |
-| Low | `nota-ai/bk-sdm-small` | First real lightweight download |
-| Mid-End | `stable-diffusion-v1-5/stable-diffusion-v1-5` | Classic 512x512 generation |
-| Mid-End | `SimianLuo/LCM_Dreamshaper_v7` | Fast low-step generation |
-| HighEnd | `segmind/SSD-1B` | Better quality compact SDXL-style generation |
-| Powerful | `stabilityai/stable-diffusion-xl-base-1.0` | Strong GPUs and high-quality SDXL output |
+| 4GB RAM | 13 models | Tiny/test pipelines, setup checks, and lowest-memory CPU use |
+| 8GB RAM | 10 models | Light SD/LCM models at 384-512px |
+| 16GB RAM | 14 models | Standard SD1.x-class CPU generation |
+| 24GB RAM | 12 models | Heavier SD1.x realistic/anime models |
+| 32GB RAM | 13 models | SD2.x and heavier CPU-compatible merges |
+| 56GB RAM | 20 models | High-RAM VPS options that still avoid FLUX/SDXL VRAM requirements |
+
+The browser picker includes 82 validated Diffusers text-to-image repos. Each one had a `model_index.json` and was
+filtered to avoid obvious GPU/VRAM-first pipelines. By default, PromptLite blocks recommendations and downloads
+that are usually GPU/VRAM-heavy, including FLUX, SDXL, SD3, SSD-1B, Kandinsky, Wuerstchen, video pipelines,
+ControlNet, inpainting, refiner, and upscaler repos. You can disable `PROMPTLITE_CPU_ONLY_MODELS` in advanced
+setups, but those models are not recommended for a Windows VPS without meaningful VRAM.
 
 The backend downloads the model into:
 
@@ -132,11 +254,21 @@ The backend downloads the model into:
 models/<save-folder>/
 ```
 
+After each download, PromptLite prunes duplicate component weights by default. If a folder has both `.safetensors`,
+`.fp16.safetensors`, `.bin`, and `.fp16.bin` copies for the same component, it keeps one preferred file and removes
+the rest. Preference order is `.safetensors`, then `.fp16.safetensors`, then `.bin`, then `.fp16.bin`.
+
 When the download finishes, refresh or use `Refresh Models`, then select the downloaded local model.
 
 Large models can take a long time and may use many gigabytes of disk space. PromptLite only starts a download after you click `Download Model`.
 
 Private or gated Hugging Face models may require a token. Login with the Hugging Face CLI or set `HF_TOKEN` before starting PromptLite.
+
+To remove accidentally downloaded GPU-heavy folders from `models`, close the Python backend window first, then run:
+
+```bat
+scripts\cleanup-vram-models.bat
+```
 
 ## Low VRAM / CPU Mode Notes
 

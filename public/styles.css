@@ -18,12 +18,18 @@
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
   font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -31,12 +37,13 @@ input,
 select,
 textarea {
   font: inherit;
+  min-width: 0;
 }
 
 .app-shell {
-  width: min(1180px, calc(100vw - 32px));
+  width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 28px 0 40px;
+  padding: 28px 0 max(40px, env(safe-area-inset-bottom));
 }
 
 .app-header {
@@ -52,6 +59,7 @@ textarea {
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .app-header p {
@@ -64,6 +72,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
 }
 
 .settings-link {
@@ -117,6 +126,7 @@ textarea {
   border-radius: 8px;
   background: var(--panel);
   box-shadow: 0 18px 48px var(--shadow);
+  min-width: 0;
 }
 
 .control-panel {
@@ -199,6 +209,10 @@ select {
   padding: 0 10px;
 }
 
+select {
+  text-overflow: ellipsis;
+}
+
 textarea:focus,
 input:focus,
 select:focus {
@@ -226,11 +240,64 @@ button {
   padding: 0 15px;
   color: var(--text);
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 button:disabled {
   cursor: wait;
   opacity: 0.68;
+}
+
+.generation-progress {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #121512;
+  padding: 12px;
+}
+
+.generation-progress[hidden] {
+  display: none;
+}
+
+.progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+#progressPercent {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.progress-track {
+  height: 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #0d0f0e;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-strong), var(--accent));
+  transition: width 0.45s ease;
+}
+
+.generation-progress.complete .progress-fill {
+  background: var(--accent);
+}
+
+.generation-progress.failed .progress-fill {
+  background: var(--danger);
 }
 
 .primary-button {
@@ -251,7 +318,8 @@ button:disabled {
   border-color: var(--accent);
 }
 
-.status-box {
+.status-box,
+.model-location-box {
   min-height: 92px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -260,6 +328,7 @@ button:disabled {
 }
 
 .status-box h2,
+.model-location-box h2,
 .status-box p,
 .output-header h2,
 .gallery-section h2 {
@@ -281,6 +350,32 @@ button:disabled {
   color: var(--danger);
 }
 
+.model-location-box dl {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+
+.model-location-box div {
+  display: grid;
+  gap: 3px;
+}
+
+.model-location-box dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.model-location-box dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .output-header {
   display: flex;
   align-items: center;
@@ -299,6 +394,7 @@ button:disabled {
   display: grid;
   place-items: center;
   min-height: 520px;
+  aspect-ratio: 1 / 1;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #0d0f0e;
@@ -357,6 +453,7 @@ button:disabled {
   background: var(--panel);
   padding: 18px;
   box-shadow: 0 18px 48px var(--shadow);
+  min-width: 0;
 }
 
 .settings-form {
@@ -370,9 +467,11 @@ button:disabled {
   align-items: center;
   gap: 10px;
   color: var(--text);
+  line-height: 1.35;
 }
 
 .checkbox-field input {
+  flex: 0 0 auto;
   width: 18px;
   height: 18px;
 }
@@ -389,44 +488,157 @@ button:disabled {
   }
 
   .image-stage {
-    min-height: min(84vw, 520px);
+    min-height: auto;
+    max-height: 620px;
   }
 }
 
 @media (max-width: 620px) {
   .app-shell {
-    width: min(100vw - 20px, 1180px);
-    padding-top: 18px;
+    width: min(100% - 20px, 1180px);
+    padding-top: max(14px, env(safe-area-inset-top));
   }
 
   .app-header {
     display: grid;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .app-header h1 {
+    font-size: clamp(2.1rem, 14vw, 3rem);
+  }
+
+  .app-header p {
+    font-size: 0.95rem;
+    line-height: 1.45;
   }
 
   .health-pill {
     width: 100%;
+    min-width: 0;
   }
 
   .header-actions {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .settings-link,
+  .health-pill {
+    min-height: 44px;
+    padding-inline: 10px;
   }
 
   .control-panel {
     grid-template-columns: 1fr;
-    padding: 14px;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .output-panel,
+  .settings-panel {
+    padding: 12px;
+  }
+
+  .model-tools {
+    padding: 10px;
   }
 
   .size-row {
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  textarea,
+  input,
+  select {
+    font-size: 16px;
+  }
+
+  input,
+  select,
+  button {
+    min-height: 46px;
+  }
+
+  textarea {
+    min-height: 112px;
+  }
+
+  #negativePrompt {
+    min-height: 84px;
+  }
+
+  .button-row,
+  .small-button-row {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .button-row button {
-    flex: 1 1 180px;
+    width: 100%;
+  }
+
+  .small-button-row button {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .output-header {
+    align-items: flex-start;
+  }
+
+  #outputMeta {
+    max-width: 70%;
+    overflow-wrap: anywhere;
+  }
+
+  .image-stage {
+    width: 100%;
+    max-height: none;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .settings-form {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    width: 100%;
+    padding-inline: 8px;
+  }
+
+  .app-header h1 {
+    font-size: clamp(1.85rem, 13vw, 2.4rem);
+  }
+
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel,
+  .output-panel,
+  .settings-panel {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .size-row {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

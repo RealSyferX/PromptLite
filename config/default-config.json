@@ -1,60 +1,599 @@
 {
+  "node_host": "127.0.0.1",
   "node_port": 1234,
+  "python_host": "127.0.0.1",
   "python_backend_url": "http://127.0.0.1:7861",
   "python_port": 7861,
+  "public_url": "",
+  "cors_origins": [],
   "outputs_dir": "outputs",
   "models_dir": "models",
-  "default_backend": "auto",
+  "default_backend": "cpu",
   "default_model": "default",
   "default_width": 512,
   "default_height": 512,
   "default_steps": 20,
   "default_guidance_scale": 7.5,
-  "default_performance_profile": "balanced",
+  "default_performance_profile": "full_power",
   "unload_model_after_generation": false,
+  "disable_safety_checker": false,
+  "prune_redundant_model_files": true,
+  "cpu_only_models": true,
   "huggingface_model_ids": [],
   "recommended_model_downloads": [
     {
       "id": "nota-ai/bk-sdm-tiny",
       "name": "BK-SDM Tiny",
-      "folder": "bk-sdm-tiny",
-      "tier": "Lowest",
-      "description": "Smallest starter option for very weak PCs and CPU testing. Quality is lower."
+      "folder": "nota-ai--bk-sdm-tiny",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
     },
     {
       "id": "nota-ai/bk-sdm-small",
       "name": "BK-SDM Small",
-      "folder": "bk-sdm-small",
-      "tier": "Low",
-      "description": "Recommended lightweight starter model. Smaller than Stable Diffusion 1.5 with usable quality."
+      "folder": "nota-ai--bk-sdm-small",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
     },
     {
-      "id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
-      "name": "Stable Diffusion 1.5",
-      "folder": "stable-diffusion-v1-5",
-      "tier": "Mid-End",
-      "description": "Classic general-purpose model. Better quality than tiny models, but heavier."
+      "id": "optimum-intel-internal-testing/tiny-stable-diffusion-torch",
+      "name": "Tiny Stable Diffusion Torch",
+      "folder": "optimum-intel-internal-testing--tiny-stable-diffusion-torch",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "segmind/small-sd",
+      "name": "Small SD",
+      "folder": "segmind--small-sd",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "optimum-intel-internal-testing/tiny-random-latent-consistency",
+      "name": "Tiny Random Latent Consistency",
+      "folder": "optimum-intel-internal-testing--tiny-random-latent-consistency",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "segmind/tiny-sd",
+      "name": "Tiny SD",
+      "folder": "segmind--tiny-sd",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "optimum-intel-internal-testing/tiny-stable-diffusion-torch-custom-variant",
+      "name": "Tiny Stable Diffusion Torch Custom Variant",
+      "folder": "optimum-intel-internal-testing--tiny-stable-diffusion-torch-custom-variant",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "optimum-intel-internal-testing/tiny-random-stable-diffusion-with-safety-checker",
+      "name": "Tiny Random Stable Diffusion With Safety Checker",
+      "folder": "optimum-intel-internal-testing--tiny-random-stable-diffusion-with-safety-checker",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "optimum-intel-internal-testing/tiny-stable-diffusion-with-textual-inversion",
+      "name": "Tiny Stable Diffusion With Textual Inversion",
+      "folder": "optimum-intel-internal-testing--tiny-stable-diffusion-with-textual-inversion",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "echarlaix/tiny-random-latent-consistency",
+      "name": "Tiny Random Latent Consistency",
+      "folder": "echarlaix--tiny-random-latent-consistency",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "katuni4ka/tiny-stable-diffusion-torch-custom-variant",
+      "name": "Tiny Stable Diffusion Torch Custom Variant",
+      "folder": "katuni4ka--tiny-stable-diffusion-torch-custom-variant",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "diffusers/tiny-stable-diffusion-torch",
+      "name": "Tiny Stable Diffusion Torch",
+      "folder": "diffusers--tiny-stable-diffusion-torch",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "OFA-Sys/small-stable-diffusion-v0",
+      "name": "Small Stable Diffusion V0",
+      "folder": "OFA-Sys--small-stable-diffusion-v0",
+      "tier": "4GB RAM",
+      "description": "Tiny/test Diffusers pipeline for CPU setup checks. Best at 384px; output quality may be rough."
+    },
+    {
+      "id": "stabilityai/sd-turbo",
+      "name": "SD Turbo",
+      "folder": "stabilityai--sd-turbo",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
     },
     {
       "id": "SimianLuo/LCM_Dreamshaper_v7",
       "name": "LCM DreamShaper v7",
-      "folder": "lcm-dreamshaper-v7",
-      "tier": "Mid-End",
-      "description": "Fast low-step model. Try 4 to 8 steps after downloading."
+      "folder": "SimianLuo--LCM_Dreamshaper_v7",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
     },
     {
-      "id": "segmind/SSD-1B",
-      "name": "SSD-1B",
-      "folder": "ssd-1b",
-      "tier": "HighEnd",
-      "description": "Better quality compact SDXL-style model. Bigger than BK-SDM, but still lighter than full SDXL."
+      "id": "Lykon/dreamshaper-8-lcm",
+      "name": "Dreamshaper 8 LCM",
+      "folder": "Lykon--dreamshaper-8-lcm",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
     },
     {
-      "id": "stabilityai/stable-diffusion-xl-base-1.0",
-      "name": "Stable Diffusion XL Base 1.0",
-      "folder": "sdxl-base-1.0",
-      "tier": "Powerful",
-      "description": "Large high-quality SDXL base model. Best for strong GPUs and lots of RAM."
+      "id": "IDKiro/sdxs-512-dreamshaper",
+      "name": "Sdxs 512 Dreamshaper",
+      "folder": "IDKiro--sdxs-512-dreamshaper",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "Lykon/DreamShaper",
+      "name": "DreamShaper",
+      "folder": "Lykon--DreamShaper",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "Lykon/dreamshaper-8",
+      "name": "Dreamshaper 8",
+      "folder": "Lykon--dreamshaper-8",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "Lykon/dreamshaper-7",
+      "name": "Dreamshaper 7",
+      "folder": "Lykon--dreamshaper-7",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "dreamlike-art/dreamlike-diffusion-1.0",
+      "name": "Dreamlike Diffusion 1.0",
+      "folder": "dreamlike-art--dreamlike-diffusion-1.0",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "dreamlike-art/dreamlike-anime-1.0",
+      "name": "Dreamlike Anime 1.0",
+      "folder": "dreamlike-art--dreamlike-anime-1.0",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "prompthero/openjourney",
+      "name": "Openjourney",
+      "folder": "prompthero--openjourney",
+      "tier": "8GB RAM",
+      "description": "Light CPU-friendly model. Try 384-512px and fewer steps for reasonable VPS latency."
+    },
+    {
+      "id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "name": "Stable Diffusion 1.5",
+      "folder": "stable-diffusion-v1-5--stable-diffusion-v1-5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "CompVis/stable-diffusion-v1-4",
+      "name": "Stable Diffusion 1.4",
+      "folder": "CompVis--stable-diffusion-v1-4",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "CompVis/stable-diffusion-v1-1",
+      "name": "Stable Diffusion 1.1",
+      "folder": "CompVis--stable-diffusion-v1-1",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "crynux-network/stable-diffusion-v1-5",
+      "name": "Stable Diffusion v1 5",
+      "folder": "crynux-network--stable-diffusion-v1-5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "ckpt/sd15",
+      "name": "SD 1.5",
+      "folder": "ckpt--sd15",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "Jiali/stable-diffusion-1.5",
+      "name": "Stable Diffusion 1.5",
+      "folder": "Jiali--stable-diffusion-1.5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "nmkd/stable-diffusion-1.5-fp16",
+      "name": "Stable Diffusion 1.5 FP16",
+      "folder": "nmkd--stable-diffusion-1.5-fp16",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "botp/stable-diffusion-v1-5",
+      "name": "Stable Diffusion v1 5",
+      "folder": "botp--stable-diffusion-v1-5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "genai-archive/stable-diffusion-v1-5",
+      "name": "Stable Diffusion v1 5",
+      "folder": "genai-archive--stable-diffusion-v1-5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "stablediffusiontutorials/stable-diffusion-v1.5",
+      "name": "Stable Diffusion V1.5",
+      "folder": "stablediffusiontutorials--stable-diffusion-v1.5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "BAAI/AltDiffusion-m9",
+      "name": "AltDiffusion M9",
+      "folder": "BAAI--AltDiffusion-m9",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "hakurei/waifu-diffusion",
+      "name": "Waifu Diffusion",
+      "folder": "hakurei--waifu-diffusion",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "ckpt/anything-v3.0",
+      "name": "Anything V3.0",
+      "folder": "ckpt--anything-v3.0",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "genai-archive/anything-v5",
+      "name": "Anything v5",
+      "folder": "genai-archive--anything-v5",
+      "tier": "16GB RAM",
+      "description": "Standard SD1.x-class CPU model. Use 512px first; slower than GPU but no VRAM required."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V5.1_noVAE",
+      "name": "Realistic Vision V5.1 noVAE",
+      "folder": "SG161222--Realistic_Vision_V5.1_noVAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V6.0_B1_noVAE",
+      "name": "Realistic Vision V6.0 B1 noVAE",
+      "folder": "SG161222--Realistic_Vision_V6.0_B1_noVAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V4.0_noVAE",
+      "name": "Realistic Vision V4.0 noVAE",
+      "folder": "SG161222--Realistic_Vision_V4.0_noVAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V3.0_VAE",
+      "name": "Realistic Vision V3.0 VAE",
+      "folder": "SG161222--Realistic_Vision_V3.0_VAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V5.0_noVAE",
+      "name": "Realistic Vision V5.0 noVAE",
+      "folder": "SG161222--Realistic_Vision_V5.0_noVAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "SG161222/Realistic_Vision_V2.0",
+      "name": "Realistic Vision V2.0",
+      "folder": "SG161222--Realistic_Vision_V2.0",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "stablediffusionapi/realistic-vision-v51",
+      "name": "Realistic Vision V51",
+      "folder": "stablediffusionapi--realistic-vision-v51",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "scenario-labs/Realistic_Vision_V5.1_noVAE",
+      "name": "Realistic Vision V5.1 noVAE",
+      "folder": "scenario-labs--Realistic_Vision_V5.1_noVAE",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "zbmacro/Realistic-Vision-V6.0-B1",
+      "name": "Realistic Vision V6.0 B1",
+      "folder": "zbmacro--Realistic-Vision-V6.0-B1",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "emilianJR/epiCRealism",
+      "name": "epiCRealism",
+      "folder": "emilianJR--epiCRealism",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "philz1337x/epicrealism",
+      "name": "Epicrealism",
+      "folder": "philz1337x--epicrealism",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "KamCastle/CyberRealistic42",
+      "name": "CyberRealistic42",
+      "folder": "KamCastle--CyberRealistic42",
+      "tier": "24GB RAM",
+      "description": "Heavier SD1.x realistic/anime model. Good for CPU boxes with extra RAM; expect longer runs."
+    },
+    {
+      "id": "Manojb/stable-diffusion-2-1-base",
+      "name": "Stable Diffusion 2 1 Base",
+      "folder": "Manojb--stable-diffusion-2-1-base",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "sd2-community/stable-diffusion-2-1",
+      "name": "Stable Diffusion 2 1",
+      "folder": "sd2-community--stable-diffusion-2-1",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "sd-research/stable-diffusion-2-1-base",
+      "name": "Stable Diffusion 2 1 Base",
+      "folder": "sd-research--stable-diffusion-2-1-base",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "sd2-community/stable-diffusion-2",
+      "name": "Stable Diffusion 2",
+      "folder": "sd2-community--stable-diffusion-2",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "sd2-community/stable-diffusion-2-1-base",
+      "name": "Stable Diffusion 2 1 Base",
+      "folder": "sd2-community--stable-diffusion-2-1-base",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "Manojb/stable-diffusion-2-base",
+      "name": "Stable Diffusion 2 Base",
+      "folder": "Manojb--stable-diffusion-2-base",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "GraydientPlatformAPI/picx-real",
+      "name": "Picx Real",
+      "folder": "GraydientPlatformAPI--picx-real",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "stablediffusionapi/juggernaut-reborn",
+      "name": "Juggernaut Reborn",
+      "folder": "stablediffusionapi--juggernaut-reborn",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "scenario-labs/juggernaut_reborn",
+      "name": "Juggernaut Reborn",
+      "folder": "scenario-labs--juggernaut_reborn",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "digiplay/Photon_v1",
+      "name": "Photon v1",
+      "folder": "digiplay--Photon_v1",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "digiplay/GhostMix",
+      "name": "GhostMix",
+      "folder": "digiplay--GhostMix",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "digiplay/majicMIX_realistic_v6",
+      "name": "majicMIX Realistic v6",
+      "folder": "digiplay--majicMIX_realistic_v6",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "digiplay/majicMIX_realistic_v7",
+      "name": "majicMIX Realistic v7",
+      "folder": "digiplay--majicMIX_realistic_v7",
+      "tier": "32GB RAM",
+      "description": "SD2.x or heavier merge. CPU-compatible, but use 512px before pushing size or steps."
+    },
+    {
+      "id": "prompthero/openjourney-v4",
+      "name": "Openjourney v4",
+      "folder": "prompthero--openjourney-v4",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "admruul/anything-v3.0",
+      "name": "Anything V3.0",
+      "folder": "admruul--anything-v3.0",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "ckpt/anything-v4.5-vae-swapped",
+      "name": "Anything V4.5 VAE Swapped",
+      "folder": "ckpt--anything-v4.5-vae-swapped",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "stablediffusionapi/anything-v5",
+      "name": "Anything v5",
+      "folder": "stablediffusionapi--anything-v5",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "DucHaiten/DucHaitenAIart",
+      "name": "DucHaitenAIart",
+      "folder": "DucHaiten--DucHaitenAIart",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "frankjoshua/toonyou_beta6",
+      "name": "Toonyou Beta6",
+      "folder": "frankjoshua--toonyou_beta6",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "dreamlike-art/dreamlike-photoreal-2.0",
+      "name": "Dreamlike Photoreal 2.0",
+      "folder": "dreamlike-art--dreamlike-photoreal-2.0",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "Lykon/AbsoluteReality",
+      "name": "AbsoluteReality",
+      "folder": "Lykon--AbsoluteReality",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "gsdf/Counterfeit-V2.5",
+      "name": "Counterfeit V2.5",
+      "folder": "gsdf--Counterfeit-V2.5",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "digiplay/DreamShaper_8",
+      "name": "DreamShaper 8",
+      "folder": "digiplay--DreamShaper_8",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "wavymulder/modelshoot",
+      "name": "Modelshoot",
+      "folder": "wavymulder--modelshoot",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "xiaolxl/GuoFeng3",
+      "name": "GuoFeng3",
+      "folder": "xiaolxl--GuoFeng3",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "p1atdev/pvc",
+      "name": "Pvc",
+      "folder": "p1atdev--pvc",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "KBlueLeaf/kohaku-v2.1",
+      "name": "Kohaku V2.1",
+      "folder": "KBlueLeaf--kohaku-v2.1",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "nitrosocke/Ghibli-Diffusion",
+      "name": "Ghibli Diffusion",
+      "folder": "nitrosocke--Ghibli-Diffusion",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "Onodofthenorth/SD_PixelArt_SpriteSheet_Generator",
+      "name": "SD PixelArt SpriteSheet Generator",
+      "folder": "Onodofthenorth--SD_PixelArt_SpriteSheet_Generator",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "6DammK9/AstolfoMix",
+      "name": "AstolfoMix",
+      "folder": "6DammK9--AstolfoMix",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "redstonehero/animesh_prunedv21",
+      "name": "Animesh Prunedv21",
+      "folder": "redstonehero--animesh_prunedv21",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "EK12317/Ekmix-Diffusion",
+      "name": "Ekmix Diffusion",
+      "folder": "EK12317--Ekmix-Diffusion",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
+    },
+    {
+      "id": "Meina/MeinaMix_V11",
+      "name": "MeinaMix V11",
+      "folder": "Meina--MeinaMix_V11",
+      "tier": "56GB RAM",
+      "description": "Heavier CPU-friendly catalog pick for high-RAM VPS use. Still avoids FLUX/SDXL VRAM requirements."
     }
   ]
 }

@@ -17,6 +17,34 @@ class ModelNotFoundError(RuntimeError):
 
 
 class ModelManager:
+    VRAM_HEAVY_MODEL_TERMS = (
+        "flux",
+        "sdxl",
+        "sd-xl",
+        "stable-diffusion-xl",
+        "stable_diffusion_xl",
+        "stable-cascade",
+        "ssd-1b",
+        "kandinsky",
+        "wuerstchen",
+        "stable-diffusion-3",
+        "sd3",
+        "sd-3",
+        "z-image",
+        "qwen",
+        "hidream",
+        "hunyuan",
+        "pixart",
+        "sana",
+        "wan",
+        "ltx",
+        "video",
+        "controlnet",
+        "inpaint",
+        "refiner",
+        "upscale",
+    )
+
     KNOWN_LOCAL_MODELS = [
         {
             "id": "stable-diffusion-1.5",
@@ -51,11 +79,52 @@ class ModelManager:
             return True
         return False
 
+    def _cpu_only_models_enabled(self) -> bool:
+        return bool(self.config_manager.get().get("cpu_only_models", True))
+
+    def _is_vram_heavy_model(self, value: str) -> bool:
+        lower = (value or "").lower()
+        return any(term in lower for term in self.VRAM_HEAVY_MODEL_TERMS)
+
+    def _is_vram_heavy_local_folder(self, folder: Path) -> bool:
+        if self._is_vram_heavy_model(folder.name):
+            return True
+        return (folder / "text_encoder_2").exists()
+
+    def _raise_if_cpu_only_hf_model_blocked(self, model_id: str) -> None:
+        if not self._cpu_only_models_enabled():
+            return
+        if self._is_vram_heavy_model(model_id):
+            raise ModelNotFoundError(
+                "This model is blocked in CPU/RAM-only mode because it usually needs GPU VRAM. "
+                "Use one of the recommended RAM-tier models instead."
+            )
+
+        try:
+            from huggingface_hub import HfApi
+
+            info = HfApi().model_info(model_id, files_metadata=False)
+        except Exception:
+            return
+
+        tags = [str(tag).lower() for tag in (getattr(info, "tags", None) or [])]
+        siblings = [sibling.rfilename for sibling in (getattr(info, "siblings", None) or [])]
+        looks_xl = (
+            any(name.startswith("text_encoder_2/") for name in siblings)
+            or any("xlpipeline" in tag or "stable-diffusion-xl" in tag or "sdxl" in tag for tag in tags)
+        )
+        if looks_xl or self._is_vram_heavy_model(" ".join([model_id, *tags])):
+            raise ModelNotFoundError(
+                "This Hugging Face model looks GPU/VRAM-heavy, so CPU/RAM-only mode blocked it. "
+                "Use a 4GB, 8GB, 16GB, 24GB, 32GB, or 56GB RAM catalog model instead."
+            )
+
     def list_models(self) -> Dict[str, Any]:
         config = self.config_manager.get()
         models_dir = self.config_manager.models_dir()
         local_models: List[Dict[str, Any]] = []
         known_ids = set()
+        cpu_only_models = self._cpu_only_models_enabled()
 
         for model in self.KNOWN_LOCAL_MODELS:
             folder = models_dir / model["folder"]
@@ -73,6 +142,8 @@ class ModelManager:
         for folder in sorted(models_dir.iterdir()):
             if not folder.is_dir() or folder.name in known_ids:
                 continue
+            if cpu_only_models and self._is_vram_heavy_local_folder(folder):
+                continue
             local_models.append({
                 "id": folder.name,
                 "name": folder.name,
@@ -87,10 +158,18 @@ class ModelManager:
         if isinstance(hf_ids, str):
             hf_ids = [hf_ids]
 
+        huggingface_models = []
+        for model_id in hf_ids:
+            if not model_id:
+                continue
+            if cpu_only_models and self._is_vram_heavy_model(str(model_id)):
+                continue
+            huggingface_models.append({"id": model_id, "type": "huggingface"})
+
         return {
             "models_dir": str(models_dir),
             "local_models": local_models,
-            "huggingface_models": [{"id": model_id, "type": "huggingface"} for model_id in hf_ids if model_id],
+            "huggingface_models": huggingface_models,
             "recommended_downloads": self._recommended_downloads(config),
             "default_model": config.get("default_model", "default"),
         }
@@ -104,8 +183,11 @@ class ModelManager:
         for item in recommendations:
             if not isinstance(item, dict) or not item.get("id"):
                 continue
+            model_id = str(item.get("id", "")).strip()
+            if self._cpu_only_models_enabled() and self._is_vram_heavy_model(model_id):
+                continue
             cleaned.append({
-                "id": str(item.get("id", "")).strip(),
+                "id": model_id,
                 "name": str(item.get("name") or item.get("id", "")).strip(),
                 "folder": str(item.get("folder") or str(item.get("id", "")).replace("/", "--")).strip(),
                 "tier": str(item.get("tier") or "Other").strip(),
@@ -116,10 +198,17 @@ class ModelManager:
 
     def resolve(self, requested_model: str, backend: str) -> ResolvedModel:
         requested = (requested_model or "default").strip()
+        if self._cpu_only_models_enabled() and self._is_vram_heavy_model(requested):
+            raise ModelNotFoundError(
+                "This model is blocked in CPU/RAM-only mode because it usually needs GPU VRAM. "
+                "Use BK-SDM Tiny, BK-SDM Small, Stable Diffusion 1.5, or LCM DreamShaper instead."
+            )
+
         model_listing = self.list_models()
 
         if requested.startswith("hf:"):
             model_id = requested[3:]
+            self._raise_if_cpu_only_hf_model_blocked(model_id)
             return ResolvedModel(
                 id=model_id,
                 name=model_id,
@@ -145,6 +234,7 @@ class ModelManager:
 
         for model in model_listing["huggingface_models"]:
             if requested in {model["id"], f"hf:{model['id']}"}:
+                self._raise_if_cpu_only_hf_model_blocked(model["id"])
                 return ResolvedModel(
                     id=model["id"],
                     name=model["id"],

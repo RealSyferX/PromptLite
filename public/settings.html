@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>PromptLite Settings</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
@@ -37,6 +37,7 @@
               <option value="low_ram">Low RAM</option>
               <option value="balanced">Balanced</option>
               <option value="quality">Quality</option>
+              <option value="full_power">Full Power</option>
             </select>
           </label>
 
@@ -85,6 +86,21 @@
             <span>Unload model after generation</span>
           </label>
 
+          <label class="checkbox-field full-span" for="disableSafetyChecker">
+            <input id="disableSafetyChecker" type="checkbox">
+            <span>Disable safety checker</span>
+          </label>
+
+          <label class="checkbox-field full-span" for="pruneRedundantModelFiles">
+            <input id="pruneRedundantModelFiles" type="checkbox">
+            <span>Prune redundant model files after download</span>
+          </label>
+
+          <label class="checkbox-field full-span" for="cpuOnlyModels">
+            <input id="cpuOnlyModels" type="checkbox">
+            <span>CPU/RAM-only model downloads</span>
+          </label>
+
           <div class="button-row full-span">
             <button class="primary-button" id="saveSettingsButton" type="submit">Save Settings</button>
           </div>
@@ -100,4 +116,3 @@
     <script src="/settings.js"></script>
   </body>
 </html>
-

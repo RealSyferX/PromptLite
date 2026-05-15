@@ -8,9 +8,11 @@ const configPath = path.join(rootDir, "config", "default-config.json");
 
 function loadConfig() {
   const fallback = {
+    node_host: "127.0.0.1",
     node_port: 1234,
     python_backend_url: "http://127.0.0.1:7861",
-    outputs_dir: "outputs"
+    outputs_dir: "outputs",
+    public_url: ""
   };
 
   try {
@@ -24,14 +26,16 @@ function loadConfig() {
 
 const config = loadConfig();
 const nodePort = Number(process.env.PROMPTLITE_NODE_PORT || process.env.NODE_PORT || config.node_port || 1234);
-const host = process.env.PROMPTLITE_NODE_HOST || "127.0.0.1";
+const host = process.env.PROMPTLITE_NODE_HOST || process.env.HOST || config.node_host || "127.0.0.1";
 const pythonBackendUrl = (process.env.PROMPTLITE_PYTHON_BACKEND_URL || config.python_backend_url || "http://127.0.0.1:7861").replace(/\/+$/, "");
 const outputsDir = path.resolve(rootDir, process.env.PROMPTLITE_OUTPUTS_DIR || config.outputs_dir || "outputs");
 const publicDir = path.join(rootDir, "public");
+const publicUrl = (process.env.PROMPTLITE_PUBLIC_URL || config.public_url || "").replace(/\/+$/, "");
 
 fs.mkdirSync(outputsDir, { recursive: true });
 
 app.disable("x-powered-by");
+app.set("trust proxy", true);
 app.use(express.json({ limit: "2mb" }));
 app.use(express.static(publicDir));
 app.use("/outputs", express.static(outputsDir));
@@ -50,7 +54,7 @@ app.use((error, req, res, next) => {
 function backendOfflinePayload(error) {
   return {
     success: false,
-    error: "Python backend is not running. Start it with scripts/start-windows.bat.",
+    error: "Python backend is not running. Start PromptLite with the Windows or VPS start script.",
     details: error && error.message ? error.message : "Backend request failed."
   };
 }
@@ -113,6 +117,10 @@ function listRecentImages() {
     .slice(0, 12);
 }
 
+function hostForUrl(hostname) {
+  return hostname.includes(":") && !hostname.startsWith("[") ? `[${hostname}]` : hostname;
+}
+
 app.get("/api/health", (req, res) => proxyToBackend(req, res, "/health", { method: "GET", timeoutMs: 5000 }));
 app.get("/api/hardware", (req, res) => proxyToBackend(req, res, "/hardware", { method: "GET", timeoutMs: 10000 }));
 app.get("/api/models", (req, res) => proxyToBackend(req, res, "/models", { method: "GET", timeoutMs: 10000 }));
@@ -135,7 +143,7 @@ app.get("/api/gallery", (req, res) => {
 app.use("/api", (req, res) => {
   res.status(404).json({
     success: false,
-    error: "Unknown API route. If you just updated PromptLite, restart scripts\\start-windows.bat."
+    error: "Unknown API route. If you just updated PromptLite, restart the PromptLite server."
   });
 });
 
@@ -144,6 +152,9 @@ app.get("*", (req, res) => {
 });
 
 app.listen(nodePort, host, () => {
-  console.log(`PromptLite UI running at http://${host}:${nodePort}`);
+  const listenUrl = `http://${hostForUrl(host)}:${nodePort}`;
+  const browserUrl = publicUrl || (host === "0.0.0.0" || host === "::" ? `http://<server-ip>:${nodePort}` : listenUrl);
+  console.log(`PromptLite UI listening on ${listenUrl}`);
+  console.log(`Open PromptLite at ${browserUrl}`);
   console.log(`Proxying Python backend at ${pythonBackendUrl}`);
 });

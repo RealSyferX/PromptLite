@@ -12,6 +12,9 @@ const elements = {
   defaultModel: document.getElementById("defaultModel"),
   hfModelIds: document.getElementById("hfModelIds"),
   unloadAfterGeneration: document.getElementById("unloadAfterGeneration"),
+  disableSafetyChecker: document.getElementById("disableSafetyChecker"),
+  pruneRedundantModelFiles: document.getElementById("pruneRedundantModelFiles"),
+  cpuOnlyModels: document.getElementById("cpuOnlyModels"),
   saveSettingsButton: document.getElementById("saveSettingsButton")
 };
 
@@ -40,7 +43,7 @@ async function requestJson(url, options = {}) {
   } catch {
     payload = {
       success: false,
-      error: "Server returned HTML instead of JSON. Restart PromptLite with scripts\\start-windows.bat, then refresh the browser."
+      error: "Server returned HTML instead of JSON. Restart PromptLite, then refresh the browser."
     };
   }
 
@@ -96,13 +99,16 @@ function populateModels(payload, selectedModel) {
 
 function applySettings(settings) {
   selectValue(elements.defaultBackend, settings.default_backend || "auto");
-  selectValue(elements.defaultProfile, settings.default_performance_profile || "balanced");
+  selectValue(elements.defaultProfile, settings.default_performance_profile || "full_power");
   selectValue(elements.defaultWidth, settings.default_width || 512);
   selectValue(elements.defaultHeight, settings.default_height || 512);
   elements.defaultSteps.value = settings.default_steps || 20;
   elements.defaultGuidance.value = settings.default_guidance_scale || 7.5;
   elements.hfModelIds.value = (settings.huggingface_model_ids || []).join("\n");
   elements.unloadAfterGeneration.checked = Boolean(settings.unload_model_after_generation);
+  elements.disableSafetyChecker.checked = Boolean(settings.disable_safety_checker);
+  elements.pruneRedundantModelFiles.checked = settings.prune_redundant_model_files !== false;
+  elements.cpuOnlyModels.checked = settings.cpu_only_models !== false;
 }
 
 function parseModelIds() {
@@ -125,7 +131,7 @@ async function loadSettingsPage() {
     setStatus(`Ready. Backend mode: ${health.selected_backend || settings.default_backend || "auto"}.`);
   } catch (error) {
     setHealth("Backend offline", false);
-    setStatus(error.message || "Python backend is not running. Start it with scripts/start-windows.bat.", "error");
+    setStatus(error.message || "Python backend is not running. Start PromptLite again.", "error");
   }
 }
 
@@ -143,6 +149,9 @@ async function saveSettings(event) {
     default_guidance_scale: Number(elements.defaultGuidance.value),
     default_performance_profile: elements.defaultProfile.value,
     unload_model_after_generation: elements.unloadAfterGeneration.checked,
+    disable_safety_checker: elements.disableSafetyChecker.checked,
+    prune_redundant_model_files: elements.pruneRedundantModelFiles.checked,
+    cpu_only_models: elements.cpuOnlyModels.checked,
     huggingface_model_ids: parseModelIds()
   };
 

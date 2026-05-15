@@ -9,9 +9,13 @@ class ConfigManager:
     """Reads default config, local user settings, and environment overrides."""
 
     ENV_MAP = {
+        "PROMPTLITE_NODE_HOST": ("node_host", str),
         "PROMPTLITE_NODE_PORT": ("node_port", int),
+        "PROMPTLITE_PYTHON_HOST": ("python_host", str),
         "PROMPTLITE_PYTHON_PORT": ("python_port", int),
         "PROMPTLITE_PYTHON_BACKEND_URL": ("python_backend_url", str),
+        "PROMPTLITE_PUBLIC_URL": ("public_url", str),
+        "PROMPTLITE_CORS_ORIGINS": ("cors_origins", lambda value: [item.strip() for item in value.split(",") if item.strip()]),
         "PROMPTLITE_OUTPUTS_DIR": ("outputs_dir", str),
         "PROMPTLITE_MODELS_DIR": ("models_dir", str),
         "PROMPTLITE_DEFAULT_BACKEND": ("default_backend", str),
@@ -22,6 +26,9 @@ class ConfigManager:
         "PROMPTLITE_DEFAULT_GUIDANCE_SCALE": ("default_guidance_scale", float),
         "PROMPTLITE_DEFAULT_PERFORMANCE_PROFILE": ("default_performance_profile", str),
         "PROMPTLITE_UNLOAD_MODEL_AFTER_GENERATION": ("unload_model_after_generation", lambda value: value.lower() in {"1", "true", "yes", "on"}),
+        "PROMPTLITE_DISABLE_SAFETY_CHECKER": ("disable_safety_checker", lambda value: value.lower() in {"1", "true", "yes", "on"}),
+        "PROMPTLITE_PRUNE_REDUNDANT_MODEL_FILES": ("prune_redundant_model_files", lambda value: value.lower() in {"1", "true", "yes", "on"}),
+        "PROMPTLITE_CPU_ONLY_MODELS": ("cpu_only_models", lambda value: value.lower() in {"1", "true", "yes", "on"}),
         "PROMPTLITE_HF_MODEL_IDS": ("huggingface_model_ids", lambda value: [item.strip() for item in value.split(",") if item.strip()]),
     }
 
@@ -34,6 +41,9 @@ class ConfigManager:
         "default_guidance_scale",
         "default_performance_profile",
         "unload_model_after_generation",
+        "disable_safety_checker",
+        "prune_redundant_model_files",
+        "cpu_only_models",
         "huggingface_model_ids",
     }
 
@@ -97,4 +107,3 @@ class ConfigManager:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.user_settings_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
         return self.load()
-

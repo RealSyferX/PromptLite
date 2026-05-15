@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+import traceback
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +23,7 @@ class GenerateRequest(BaseModel):
     seed: int = -1
     backend: str = "auto"
     model: str = "default"
-    performance_profile: str = "balanced"
+    performance_profile: str = "full_power"
 
 
 class SettingsUpdate(BaseModel):
@@ -33,6 +35,9 @@ class SettingsUpdate(BaseModel):
     default_guidance_scale: Optional[float] = None
     default_performance_profile: Optional[str] = None
     unload_model_after_generation: Optional[bool] = None
+    disable_safety_checker: Optional[bool] = None
+    prune_redundant_model_files: Optional[bool] = None
+    cpu_only_models: Optional[bool] = None
     huggingface_model_ids: Optional[list[str]] = None
 
 
@@ -47,6 +52,52 @@ model_manager = ModelManager(config_manager)
 image_generator = ImageGenerator(config_manager, model_manager)
 model_downloader = ModelDownloader(config_manager)
 
+
+def normalize_origin(origin: str) -> str:
+    parsed = urlparse(origin)
+    if parsed.scheme and parsed.netloc:
+        return f"{parsed.scheme}://{parsed.netloc}"
+    return origin.rstrip("/")
+
+
+def configured_cors_origins() -> List[str]:
+    settings = config_manager.get()
+    default_node_port = settings.get("node_port", 1234)
+    origins = [
+        f"http://127.0.0.1:{default_node_port}",
+        f"http://localhost:{default_node_port}",
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+    ]
+
+    public_url = normalize_origin(str(settings.get("public_url") or "").strip())
+    if public_url:
+        origins.append(public_url)
+
+    configured = settings.get("cors_origins") or []
+    if isinstance(configured, str):
+        configured = [item.strip() for item in configured.split(",") if item.strip()]
+
+    for origin in configured:
+        clean_origin = normalize_origin(str(origin).strip())
+        if clean_origin:
+            origins.append(clean_origin)
+
+    return list(dict.fromkeys(origins))
+
+
+def ui_url() -> str:
+    settings = config_manager.get()
+    public_url = str(settings.get("public_url") or "").strip().rstrip("/")
+    if public_url:
+        return public_url
+
+    node_host = str(settings.get("node_host") or "localhost")
+    node_port = settings.get("node_port", 1234)
+    if node_host in {"0.0.0.0", "::"}:
+        node_host = "<server-ip>"
+    return f"http://{node_host}:{node_port}"
+
 app = FastAPI(
     title="PromptLite Backend",
     description="Local FastAPI backend for PromptLite image generation.",
@@ -55,12 +106,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:1234",
-        "http://localhost:1234",
-        "http://127.0.0.1:3000",
-        "http://localhost:3000",
-    ],
+    allow_origins=configured_cors_origins(),
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,6 +126,11 @@ def model_to_dict(model: BaseModel) -> Dict[str, Any]:
     return model.dict()
 
 
+def print_backend_error(error: Exception) -> None:
+    print("\nPromptLite backend error:", flush=True)
+    traceback.print_exception(type(error), error, error.__traceback__)
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc: HTTPException):
     from fastapi.responses import JSONResponse
@@ -89,13 +140,29 @@ async def http_exception_handler(request, exc: HTTPException):
     return JSONResponse(status_code=exc.status_code, content={"success": False, "error": str(exc.detail)})
 
 
+@app.on_event("startup")
+def prune_downloaded_models_on_startup() -> None:
+    if not config_manager.get().get("prune_redundant_model_files", True):
+        return
+
+    result = model_downloader.prune_all_model_dirs()
+    if result["removed_files"] > 0:
+        print(
+            "PromptLite model cleanup: "
+            f"removed {result['removed_files']} redundant file(s), "
+            f"freed {model_downloader._format_bytes(result['reclaimed_bytes'])}.",
+            flush=True,
+        )
+
+
 @app.get("/")
 def root() -> Dict[str, Any]:
+    web_url = ui_url()
     return {
         "success": True,
         "service": "PromptLite Python backend",
-        "message": "This is the Python backend. Open the PromptLite web UI at http://localhost:1234.",
-        "ui_url": "http://localhost:1234",
+        "message": f"This is the Python backend. Open the PromptLite web UI at {web_url}.",
+        "ui_url": web_url,
         "health_url": "/health",
         "docs_url": "/docs",
     }
@@ -164,12 +231,16 @@ def generate(request: GenerateRequest) -> Dict[str, Any]:
     try:
         return image_generator.generate(model_to_dict(request))
     except ModelNotFoundError as error:
+        print_backend_error(error)
         raise error_response(400, str(error))
     except BackendUnavailableError as error:
+        print_backend_error(error)
         raise error_response(400, str(error))
     except PromptLiteError as error:
+        print_backend_error(error)
         raise error_response(500, str(error))
     except Exception as error:
+        print_backend_error(error)
         raise error_response(500, "Generation failed unexpectedly.", str(error))
 
 

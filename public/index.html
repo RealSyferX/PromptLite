@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>PromptLite</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
@@ -11,7 +11,7 @@
       <header class="app-header">
         <div>
           <h1>PromptLite</h1>
-          <p>Local AI image generation for low VRAM and CPU-friendly Windows PCs.</p>
+          <p>Local or VPS-hosted AI image generation for low VRAM and CPU-friendly machines.</p>
         </div>
         <div class="header-actions">
           <a class="settings-link" href="/settings.html">Settings</a>
@@ -43,7 +43,7 @@
                 <option value="">Choose a model to download</option>
               </select>
             </label>
-            <p class="model-tier-note" id="recommendedModelInfo">Pick a tier first if you are not sure what your PC can handle.</p>
+            <p class="model-tier-note" id="recommendedModelInfo">Pick a RAM tier first if you are not sure what your server can handle.</p>
             <label class="field" for="hfModelId">
               <span>Hugging Face model ID</span>
               <input id="hfModelId" type="text" placeholder="author/model-name">
@@ -75,6 +75,7 @@
               <option value="low_ram">Low RAM</option>
               <option value="balanced">Balanced</option>
               <option value="quality">Quality</option>
+              <option value="full_power">Full Power</option>
             </select>
           </label>
 
@@ -120,9 +121,37 @@
             <button class="secondary-button" id="unloadButton" type="button">Unload Model</button>
           </div>
 
+          <section class="generation-progress full-span" id="generationProgress" hidden aria-live="polite">
+            <div class="progress-copy">
+              <span id="progressLabel">Preparing</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Generation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </section>
+
           <section class="status-box full-span" aria-live="polite">
             <h2>Status</h2>
             <p id="statusText">Ready.</p>
+          </section>
+
+          <section class="model-location-box full-span">
+            <h2>Model Location</h2>
+            <dl>
+              <div>
+                <dt>Name</dt>
+                <dd id="loadedModelName">No model selected</dd>
+              </div>
+              <div>
+                <dt>Source</dt>
+                <dd id="loadedModelSource">-</dd>
+              </div>
+              <div>
+                <dt>Location</dt>
+                <dd id="loadedModelLocation">Select a model to preview its folder or repo.</dd>
+              </div>
+            </dl>
           </section>
         </form>
 

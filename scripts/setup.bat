@@ -26,7 +26,7 @@ echo.
 echo Setup complete.
 echo.
 echo Next steps:
-echo   1. Place a supported model folder in models\stable-diffusion-1.5, models\tiny, or models\openvino.
+echo   1. Place a supported model folder in models\, or use the web UI downloader.
 echo   2. Run scripts\start-windows.bat
 echo   3. Open http://localhost:1234
 echo.
